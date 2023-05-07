@@ -14,7 +14,7 @@ export class MessageGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const chatId = request.params.id;
-    const userId = request.user.id;
+    const userId = request.user.userId;
 
     const chat = await this.chatsService.findOne(chatId);
 
@@ -25,11 +25,13 @@ export class MessageGuard implements CanActivate {
 
     let found = false;
 
-    chat.members.map((mem) => {
-      if (mem.userId === userId) {
-        found = true;
-      }
-    });
+    if (chat.members) {
+      chat.members.map((mem) => {
+        if (mem.userId === userId) {
+          found = true;
+        }
+      });
+    }
     if (chat.ownerId === userId) {
       found = true;
     }
