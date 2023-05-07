@@ -5,7 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ChatsModule } from './chats/chats.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Chat } from './chats/entities/chat.entity';
+import { Chat, ChatMember } from './chats/entities/chat.entity';
 import { User } from './users/entities/user.entity';
 import { MessageModule } from './message/message.module';
 import { Message } from './message/entities/message.entity';
@@ -22,7 +22,7 @@ import { Message } from './message/entities/message.entity';
       username: 'postgres',
       password: '098zxc',
       database: 'barta-chat-nest',
-      entities: [User, Chat, Message],
+      entities: [User, Chat, ChatMember, Message],
       synchronize: true,
     }),
     MessageModule,

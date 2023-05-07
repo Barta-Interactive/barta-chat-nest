@@ -1,4 +1,11 @@
-import { Column, PrimaryGeneratedColumn, Entity, BaseEntity } from 'typeorm';
+import {
+  Column,
+  PrimaryGeneratedColumn,
+  Entity,
+  BaseEntity,
+  JoinTable,
+  ManyToMany,
+} from 'typeorm';
 
 @Entity()
 export class ChatMember {
@@ -23,5 +30,7 @@ export class Chat extends BaseEntity {
   @Column({ nullable: true })
   displayPicture?: string;
   @Column({ type: 'json', nullable: true })
+  @ManyToMany(() => ChatMember)
+  @JoinTable()
   members: ChatMember[];
 }
