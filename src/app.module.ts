@@ -9,19 +9,24 @@ import { Chat, ChatMember } from './chats/entities/chat.entity';
 import { User } from './users/entities/user.entity';
 import { MessageModule } from './message/message.module';
 import { Message } from './message/entities/message.entity';
+import { ConfigModule } from '@nestjs/config';
+import * as process from 'process';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     AuthModule,
     UsersModule,
     ChatsModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: '098zxc',
-      database: 'barta-chat-nest',
+      host: process.env.DATABASE_URL,
+      port: parseInt(process.env.DATABASE_PORT),
+      username: process.env.DATABASE_USERNAME,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
       entities: [User, Chat, ChatMember, Message],
       synchronize: true,
     }),
