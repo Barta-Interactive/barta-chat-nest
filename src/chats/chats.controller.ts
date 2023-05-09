@@ -9,6 +9,7 @@ import {
   Request,
   UseGuards,
   UnauthorizedException,
+  Sse,
 } from '@nestjs/common';
 import { ChatsService } from './chats.service';
 import { CreateChatDto } from './dto/create-chat.dto';
@@ -16,11 +17,16 @@ import { UpdateChatDto } from './dto/update-chat.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { AddUserDto } from './dto/add-user-dto';
 import { ChatAdminOrOwnerGuard } from './admin.chat.guard';
+import { Observable } from 'rxjs';
+import { MessageService } from '../message/message.service';
 
 @Controller('chats')
 @UseGuards(AuthGuard)
 export class ChatsController {
-  constructor(private readonly chatsService: ChatsService) {}
+  constructor(
+    private readonly chatsService: ChatsService,
+    private readonly messageService: MessageService,
+  ) {}
 
   @Get('/mine')
   async getMine(@Request() req) {
@@ -59,6 +65,27 @@ export class ChatsController {
   @Delete('/:id')
   remove(@Param('id') id: string) {
     return this.chatsService.deleteChat(+id);
+  }
+
+  @Sse('/:chatId/messages')
+  publishUpdates(): Observable<Partial<MessageEvent>> {
+    return new Observable<Partial<MessageEvent>>((subscriber) => {
+      const listener = (payload) => {
+        subscriber.next({ data: payload });
+      };
+
+      this.messageService.messageEmitter.addListener(
+        'messageCreated',
+        listener,
+      );
+
+      return () => {
+        this.messageService.messageEmitter.removeListener(
+          'messageCreated',
+          listener,
+        );
+      };
+    });
   }
 
   @UseGuards(ChatAdminOrOwnerGuard)

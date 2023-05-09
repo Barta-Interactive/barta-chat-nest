@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Message } from './entities/message.entity';
 import { Chat } from '../chats/entities/chat.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class MessageService {
@@ -13,6 +14,7 @@ export class MessageService {
     private messageRepository: Repository<Message>,
     @InjectRepository(Chat)
     private chatRepository: Repository<Chat>,
+    readonly messageEmitter: EventEmitter2,
   ) {}
 
   async create(createMessageDto: CreateMessageDto, userId: number) {
@@ -21,7 +23,9 @@ export class MessageService {
       chat_id: createMessageDto.chat_id,
       message_text: createMessageDto.message_text,
     });
-    return await this.messageRepository.save(created);
+    const saved = await this.messageRepository.save(created);
+    this.messageEmitter.emit('messageCreated', saved);
+    return saved;
   }
 
   async findAll(chat_id: number) {

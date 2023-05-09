@@ -4,14 +4,16 @@ import { UpdateChatDto } from './dto/update-chat.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Chat, ChatMember } from './entities/chat.entity';
 import { Repository } from 'typeorm';
+import { Message } from '../message/entities/message.entity';
 
 @Injectable()
 export class ChatsService {
   constructor(
     @InjectRepository(Chat)
     private chatsRepository: Repository<Chat>,
+    @InjectRepository(Message)
+    private messageRepository: Repository<Message>,
   ) {}
-
   async create(createChatDto: CreateChatDto) {
     const created = this.chatsRepository.create(createChatDto);
     return await this.chatsRepository.save(created);

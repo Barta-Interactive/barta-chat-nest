@@ -11,6 +11,7 @@ import { MessageModule } from './message/message.module';
 import { Message } from './message/entities/message.entity';
 import { ConfigModule } from '@nestjs/config';
 import * as process from 'process';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import * as process from 'process';
       entities: [User, Chat, ChatMember, Message],
       synchronize: true,
     }),
+    EventEmitterModule.forRoot(),
     MessageModule,
   ],
   controllers: [AppController],
