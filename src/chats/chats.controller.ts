@@ -17,8 +17,13 @@ import { UpdateChatDto } from './dto/update-chat.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { AddUserDto } from './dto/add-user-dto';
 import { ChatAdminOrOwnerGuard } from './admin.chat.guard';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { MessageService } from '../message/message.service';
+
+interface CustomEvent {
+  event: string;
+  data: any;
+}
 
 @Controller('chats')
 @UseGuards(AuthGuard)
@@ -67,11 +72,11 @@ export class ChatsController {
     return this.chatsService.deleteChat(+id);
   }
 
-  @Sse('/:chatId/messages')
-  publishUpdates(): Observable<Partial<MessageEvent>> {
-    return new Observable<Partial<MessageEvent>>((subscriber) => {
+  @Sse('/:chatId/getUpdates')
+  publishUpdates(): Observable<Partial<CustomEvent>> {
+    return new Observable<Partial<CustomEvent>>((subscriber) => {
       const listener = (payload) => {
-        subscriber.next({ data: payload });
+        subscriber.next({ event: 'newMessage', data: payload });
       };
 
       this.messageService.messageEmitter.addListener(
@@ -85,7 +90,7 @@ export class ChatsController {
           listener,
         );
       };
-    });
+    }).pipe(map((eventData: CustomEvent) => ({ ...eventData })));
   }
 
   @UseGuards(ChatAdminOrOwnerGuard)
