@@ -20,7 +20,7 @@ import { ChatAdminOrOwnerGuard } from './admin.chat.guard';
 import { map, Observable } from 'rxjs';
 import { MessageService } from '../message/message.service';
 
-interface CustomEvent {
+interface CustomEvent extends MessageEvent {
   event: string;
   data: any;
 }

@@ -12,9 +12,14 @@ import { Message } from './message/entities/message.entity';
 import { ConfigModule } from '@nestjs/config';
 import * as process from 'process';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 10,
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
