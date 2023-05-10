@@ -8,6 +8,11 @@
 $ yarn install
 ```
 
+## Generate docs (Powered by [compodoc](https://compodoc.app))
+```bash
+$ npx @compodoc/compodoc -p tsconfig.json -s
+```
+
 ## Running the app
 
 ```bash
